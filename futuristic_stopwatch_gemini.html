@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberStopwatch - 現代科技感碼錶</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            900: '#0a0b10',
+                            800: '#121520',
+                            700: '#1a1f30',
+                            accent: '#00f2fe',
+                            accent2: '#4facfe',
+                            neonPink: '#ff007f',
+                            neonGreen: '#00ffcc',
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"Courier New"', 'Courier', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .timer-font {
+            font-family: 'Share Tech Mono', monospace;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.5), 0 0 40px rgba(0, 242, 254, 0.2);
+        }
+        .glass-panel {
+            background: rgba(18, 21, 32, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+        }
+        .glow-pink {
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+        /* Custom Scrollbar for Laps */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 11, 16, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 254, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 242, 254, 0.6);
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-cyber-900 text-gray-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
+
+    <!-- Ambient Background Lighting Orbs -->
+    <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-gradient-to-br from-blue-600/25 to-cyan-400/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-gradient-to-br from-purple-600/20 to-pink-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <header class="w-full py-6 px-6 sm:px-12 flex justify-between items-center z-10">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center glow-accent">
+                <i class="fa-solid fa-stopwatch text-cyber-900 text-xl font-bold"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">CYBER_CHRONO</h1>
+                <p class="text-xs text-gray-400 tracking-widest uppercase">Precision Timer v2.5</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button id="soundToggle" title="音效開關" class="glass-button w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-cyan-400">
+                <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+            </button>
+            <button onclick="openHelpModal()" title="快捷鍵說明" class="glass-button w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-cyan-400">
+                <i class="fa-solid fa-keyboard"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex flex-col items-center justify-center px-4 sm:px-6 py-4 z-10 max-w-4xl mx-auto w-full">
+        
+        <!-- Timer Display Card -->
+        <div class="glass-panel rounded-3xl p-6 sm:p-12 w-full text-center relative overflow-hidden mb-8 transition-all duration-300">
+            <!-- Top Subtle Border Glow -->
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-75"></div>
+
+            <!-- Status Indicator Badge -->
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-700/60 border border-gray-700/50 text-xs mb-6 tracking-wider">
+                <span id="statusDot" class="w-2 h-2 rounded-full bg-gray-500"></span>
+                <span id="statusText" class="text-gray-300 font-medium uppercase">準備就緒</span>
+            </div>
+
+            <!-- Main Time Display -->
+            <div class="my-4 select-none">
+                <div class="timer-font text-5xl sm:text-8xl md:text-9xl font-bold tracking-tight text-white flex justify-center items-baseline">
+                    <span id="minutes">00</span>
+                    <span class="text-cyan-400 animate-pulse-glow mx-1">:</span>
+                    <span id="seconds">00</span>
+                    <span class="text-cyan-400/70 text-4xl sm:text-6xl md:text-7xl mx-1">.</span>
+                    <span id="milliseconds" class="text-cyan-300 text-3xl sm:text-5xl md:text-6xl w-24 sm:w-40 text-left font-normal">000</span>
+                </div>
+            </div>
+
+            <!-- Interactive Control Buttons -->
+            <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-6 mt-8">
+                <!-- Lap / Reset Secondary Button -->
+                <button id="lapResetBtn" onclick="handleLapOrReset()" class="glass-button px-6 sm:px-8 py-3.5 rounded-2xl font-medium text-gray-300 hover:text-white flex items-center space-x-2 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-rotate-right" id="lapResetIcon"></i>
+                    <span id="lapResetText">重置</span>
+                    <span class="text-xs text-gray-500 ml-1 hidden sm:inline">[R]</span>
+                </button>
+
+                <!-- Start / Pause Primary Button -->
+                <button id="startPauseBtn" onclick="toggleStartPause()" class="px-8 sm:px-12 py-4 rounded-2xl font-bold text-cyber-900 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 glow-accent transition-all duration-300 flex items-center space-x-3 active:scale-95 text-lg">
+                    <i class="fa-solid fa-play" id="startPauseIcon"></i>
+                    <span id="startPauseText">開始</span>
+                    <span class="text-xs text-cyber-900/70 ml-1 hidden sm:inline">[空白鍵]</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Laps & Split Panel -->
+        <div class="glass-panel rounded-3xl w-full p-6 sm:p-8 flex flex-col max-h-[380px]">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-800">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-flag text-cyan-400"></i>
+                    <h2 class="font-bold text-base sm:text-lg tracking-wide text-gray-200">計次紀錄 (Laps)</h2>
+                    <span id="lapCountBadge" class="ml-2 px-2.5 py-0.5 rounded-full bg-cyan-900/50 text-cyan-400 text-xs font-mono border border-cyan-700/30">0</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="clearLaps()" id="clearLapsBtn" class="text-xs text-gray-400 hover:text-pink-400 transition-colors flex items-center space-x-1 disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>清除紀錄</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lap List Container -->
+            <div id="lapsContainer" class="overflow-y-auto flex-grow pr-1 space-y-2">
+                <div id="noLapsMessage" class="text-center py-8 text-gray-500 text-sm italic">
+                    尚無計次紀錄，點擊「計次」或按 <kbd class="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">L</kbd> 鍵新增紀錄
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-4 text-center text-xs text-gray-500 z-10 border-t border-gray-800/60 mt-auto">
+        <p>Cyber Chrono Timer &copy; 2026 | 支援鍵盤快速鍵操作</p>
+    </footer>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-8 relative border border-cyan-500/20 shadow-2xl">
+            <button onclick="closeHelpModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white w-8 h-8 rounded-full flex items-center justify-center bg-white/5">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-cyber-900 font-bold">
+                    <i class="fa-solid fa-keyboard"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">鍵盤快捷鍵指南</h3>
+            </div>
+            <div class="space-y-4 text-sm text-gray-300">
+                <div class="flex justify-between items-center py-2 border-b border-gray-800">
+                    <span>開始 / 暫停</span>
+                    <kbd class="px-2.5 py-1 bg-gray-800/80 border border-gray-700 rounded-lg text-cyan-400 font-mono text-xs shadow">Space (空白鍵)</kbd>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-800">
+                    <span>計次 (Lap) / 重置 (Reset)</span>
+                    <kbd class="px-2.5 py-1 bg-gray-800/80 border border-gray-700 rounded-lg text-cyan-400 font-mono text-xs shadow">L 鍵 (計次)</kbd>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-800">
+                    <span>重置碼錶</span>
+                    <kbd class="px-2.5 py-1 bg-gray-800/80 border border-gray-700 rounded-lg text-cyan-400 font-mono text-xs shadow">R 鍵</kbd>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span>開啟說明</span>
+                    <kbd class="px-2.5 py-1 bg-gray-800/80 border border-gray-700 rounded-lg text-cyan-400 font-mono text-xs shadow">H 鍵</kbd>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button onclick="closeHelpModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 font-bold text-cyber-900 hover:opacity-95 transition-opacity">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Box -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="glass-panel px-4 py-3 rounded-2xl border border-cyan-500/30 flex items-center space-x-3 shadow-xl">
+            <div id="toastIcon" class="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xs">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <span id="toastMessage" class="text-sm font-medium text-gray-200">提示訊息</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // State Variables
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let laps = [];
+        let soundEnabled = true;
+
+        // DOM Elements
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const millisecondsEl = document.getElementById('milliseconds');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const startPauseIcon = document.getElementById('startPauseIcon');
+        const startPauseText = document.getElementById('startPauseText');
+        const lapResetBtn = document.getElementById('lapResetBtn');
+        const lapResetIcon = document.getElementById('lapResetIcon');
+        const lapResetText = document.getElementById('lapResetText');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const lapsContainer = document.getElementById('lapsContainer');
+        const noLapsMessage = document.getElementById('noLapsMessage');
+        const lapCountBadge = document.getElementById('lapCountBadge');
+        const clearLapsBtn = document.getElementById('clearLapsBtn');
+        const soundToggleBtn = document.getElementById('soundToggle');
+        const soundIcon = document.getElementById('soundIcon');
+        const helpModal = document.getElementById('helpModal');
+
+        // Audio synthesis for futuristic click/beep sounds using Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'start') {
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'pause') {
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'lap') {
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'reset') {
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) {
+                console.log('Audio playback prevented or not supported', e);
+            }
+        }
+
+        // Format time into mm:ss.ms
+        function formatTime(timeInMs) {
+            let minutes = Math.floor(timeInMs / 60000);
+            let seconds = Math.floor((timeInMs % 60000) / 1000);
+            let milliseconds = Math.floor((timeInMs % 1000));
+
+            return {
+                mins: String(minutes).padStart(2, '0'),
+                secs: String(seconds).padStart(2, '0'),
+                mils: String(milliseconds).padStart(3, '0')
+            };
+        }
+
+        // Update display view
+        function updateDisplay(timeInMs) {
+            const formatted = formatTime(timeInMs);
+            minutesEl.textContent = formatted.mins;
+            secondsEl.textContent = formatted.secs;
+            millisecondsEl.textContent = formatted.mils;
+        }
+
+        // Toggle Start / Pause
+        function toggleStartPause() {
+            if (!isRunning) {
+                // Start timer
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    updateDisplay(elapsedTime);
+                }, 10); // Update every 10ms for smooth millisecond display
+                
+                isRunning = true;
+                startPauseBtn.className = "px-8 sm:px-12 py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 glow-pink transition-all duration-300 flex items-center space-x-3 active:scale-95 text-lg";
+                startPauseIcon.className = "fa-solid fa-pause";
+                startPauseText.textContent = "暫停";
+                
+                // Change lap/reset button to Lap
+                lapResetBtn.disabled = false;
+                lapResetIcon.className = "fa-solid fa-flag text-cyan-400";
+                lapResetText.textContent = "計次";
+                
+                // Status badge
+                statusDot.className = "w-2 h-2 rounded-full bg-cyan-400 animate-pulse";
+                statusText.textContent = "計時中";
+                statusText.className = "text-cyan-400 font-medium uppercase tracking-wider";
+
+                playSound('start');
+            } else {
+                // Pause timer
+                clearInterval(timerInterval);
+                isRunning = false;
+                startPauseBtn.className = "px-8 sm:px-12 py-4 rounded-2xl font-bold text-cyber-900 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 glow-accent transition-all duration-300 flex items-center space-x-3 active:scale-95 text-lg";
+                startPauseIcon.className = "fa-solid fa-play";
+                startPauseText.textContent = "繼續";
+                
+                // Change lap/reset button to Reset when paused
+                lapResetIcon.className = "fa-solid fa-rotate-right";
+                lapResetText.textContent = "重置";
+
+                // Status badge
+                statusDot.className = "w-2 h-2 rounded-full bg-amber-400";
+                statusText.textContent = "已暫停";
+                statusText.className = "text-amber-400 font-medium uppercase tracking-wider";
+
+                playSound('pause');
+            }
+        }
+
+        // Handle Secondary Button Action (Lap if running, Reset if paused)
+        function handleLapOrReset() {
+            if (isRunning) {
+                recordLap();
+            } else {
+                resetTimer();
+            }
+        }
+
+        // Record Lap function
+        function recordLap() {
+            const currentLapTime = elapsedTime;
+            const previousTotalTime = laps.length > 0 ? laps[0].totalTime : 0;
+            const lapIntervalTime = currentLapTime - previousTotalTime;
+
+            const lapData = {
+                id: laps.length + 1,
+                totalTime: currentLapTime,
+                intervalTime: lapIntervalTime
+            };
+
+            laps.unshift(lapData); // Add to beginning of array
+            renderLaps();
+            playSound('lap');
+            showToast(`已記錄第 ${lapData.id} 次計次`);
+        }
+
+        // Render Laps list
+        function renderLaps() {
+            lapCountBadge.textContent = laps.length;
+            if (laps.length > 0) {
+                noLapsMessage.style.display = 'none';
+                clearLapsBtn.disabled = false;
+            } else {
+                noLapsMessage.style.display = 'block';
+                clearLapsBtn.disabled = true;
+            }
+
+            // Find fastest and slowest laps if there are 2 or more laps
+            let fastestId = null;
+            let slowestId = null;
+            if (laps.length >= 2) {
+                let minInterval = Infinity;
+                let maxInterval = -Infinity;
+                laps.forEach(l => {
+                    if (l.intervalTime < minInterval) {
+                        minInterval = l.intervalTime;
+                        fastestId = l.id;
+                    }
+                    if (l.intervalTime > maxInterval) {
+                        maxInterval = l.intervalTime;
+                        slowestId = l.id;
+                    }
+                });
+            }
+
+            let html = '';
+            laps.forEach((lap, index) => {
+                const totalFormatted = formatTime(lap.totalTime);
+                const intervalFormatted = formatTime(lap.intervalTime);
+                
+                let badgeClass = "";
+                let badgeText = "";
+                if (lap.id === fastestId && laps.length >= 2) {
+                    badgeClass = "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+                    badgeText = "最快";
+                } else if (lap.id === slowestId && laps.length >= 2) {
+                    badgeClass = "bg-rose-500/20 text-rose-400 border-rose-500/30";
+                    badgeText = "最慢";
+                }
+
+                html += `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-all duration-200">
+                        <div class="flex items-center space-x-3">
+                            <span class="font-mono text-xs text-gray-400 w-8">#${String(lap.id).padStart(2, '0')}</span>
+                            ${badgeText ? `<span class="px-2 py-0.5 rounded text-[10px] font-medium border ${badgeClass}">${badgeText}</span>` : ''}
+                            <span class="font-mono text-xs text-gray-300">+${intervalFormatted.mins}:${intervalFormatted.secs}.${intervalFormatted.mils}</span>
+                        </div>
+                        <div class="font-mono text-sm sm:text-base font-bold text-cyan-400">
+                            ${totalFormatted.mins}:${totalFormatted.secs}.${totalFormatted.mils}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Keep noLapsMessage element if empty, else update
+            if (laps.length === 0) {
+                lapsContainer.innerHTML = `
+                    <div id="noLapsMessage" class="text-center py-8 text-gray-500 text-sm italic">
+                        尚無計次紀錄，點擊「計次」或按 <kbd class="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono">L</kbd> 鍵新增紀錄
+                    </div>
+                `;
+            } else {
+                lapsContainer.innerHTML = html;
+            }
+        }
+
+        // Reset Timer
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            elapsedTime = 0;
+            updateDisplay(0);
+
+            startPauseBtn.className = "px-8 sm:px-12 py-4 rounded-2xl font-bold text-cyber-900 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 glow-accent transition-all duration-300 flex items-center space-x-3 active:scale-95 text-lg";
+            startPauseIcon.className = "fa-solid fa-play";
+            startPauseText.textContent = "開始";
+
+            lapResetBtn.disabled = false;
+            lapResetIcon.className = "fa-solid fa-rotate-right";
+            lapResetText.textContent = "重置";
+
+            statusDot.className = "w-2 h-2 rounded-full bg-gray-500";
+            statusText.textContent = "準備就緒";
+            statusText.className = "text-gray-300 font-medium uppercase tracking-wider";
+
+            playSound('reset');
+        }
+
+        // Clear all laps
+        function clearLaps() {
+            laps = [];
+            renderLaps();
+            showToast('已清除所有計次紀錄');
+        }
+
+        // Toast Notification System
+        let toastTimeout = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Sound Toggle
+        soundToggleBtn.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled) {
+                soundIcon.className = "fa-solid fa-volume-high";
+                showToast('音效已開啟');
+            } else {
+                soundIcon.className = "fa-solid fa-volume-xmark";
+                showToast('音效已關閉');
+            }
+        });
+
+        // Modal Controls
+        function openHelpModal() {
+            helpModal.classList.remove('hidden');
+            setTimeout(() => {
+                helpModal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeHelpModal() {
+            helpModal.classList.add('opacity-0');
+            setTimeout(() => {
+                helpModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Keyboard Shortcuts Listener
+        document.addEventListener('keydown', (e) => {
+            // Ignore if typing in input fields (if any)
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            const key = e.key.toLowerCase();
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleStartPause();
+            } else if (key === 'l') {
+                e.preventDefault();
+                if (isRunning) {
+                    recordLap();
+                }
+            } else if (key === 'r') {
+                e.preventDefault();
+                if (!isRunning && elapsedTime > 0) {
+                    resetTimer();
+                } else if (!isRunning && elapsedTime === 0) {
+                    // Quick reset trigger
+                    resetTimer();
+                } else if (isRunning) {
+                    // If running, R key can trigger lap as well or do nothing
+                    recordLap();
+                }
+            } else if (key === 'h') {
+                e.preventDefault();
+                if (helpModal.classList.contains('hidden')) {
+                    openHelpModal();
+                } else {
+                    closeHelpModal();
+                }
+            }
+        });
+
+        // Initialize display on load
+        window.onload = () => {
+            updateDisplay(0);
+        };
+    </script>
+</body>
+</html>
