@@ -1,0 +1,233 @@
+<!doctype html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2026 by anonymous (http://jsbin.com/zitudahaqe/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html lang="zh-Hant"><head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20261016-04-d5e3a25","C":{"Abril Fatface":"YACgEZbkUVE,0","Albert Sans":"YAHO2HRfeh4,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo Black":"YACgEZulLoA,0","Archivo":"YAHO2-t-jNE,0","Arial":"YAGyDvJ_4Ts,0","Baloo 2":"YAHO2IcQUcM,0","Barlow Condensed":"YAFdJljEuFc,0","Barlow":"YAFdJsyuOPM,1","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Cairo":"YAFdtXpDzlQ,0","Canva Sans":"YAFdJjTk5UU,1","Caveat":"YALBs2ploWQ,0","Cinzel":"YACgEeV8bIQ,0","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","Courier Prime":"YAD1aFjegN8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Figtree":"YAHO2b-mV7A,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAFdJpU7Kkk,0","Fredoka":"YACgEZml080,0","Georgia":"YAGzXkO0pEM,0","Hanken Grotesk":"YAHO2VB9G0I,0","Helvetica":"YAFcf7zkXN0,0","IBM Plex Mono":"YAFdJkmvhGI,0","IBM Plex Sans":"YAFdJgT0SHI,0","Impact":"YAFcfnjI7Vk,0","Instrument Sans":"YAHO2bKyaSQ,0","Instrument Serif":"YAHFeOnZNEk,0","Inter":"YAFdJvSyp_k,3","Italiana":"YAHO2Toik_w,0","Jacques Francois":"YAHO2a5g66Q,0","JetBrains Mono":"YAFdJksXcAk,0","Josefin Sans":"YAFdJjvw9Ps,0","Karla":"YAHO2V2NSXM,0","Lato":"YAFdJuFCnaw,0","Libre Baskerville":"YACgEUFdPdA,0","Libre Caslon Display":"YAHO2XhLmt0,0","Lobster":"YAD8SnSjSFI,0","Lora":"YACgEXvxf8Q,0","Manrope":"YAHO2b2feC4,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YAFdtQi73Xs,0","Noto Sans JP":"YAFdJiHXlcI,0","Noto Sans KR":"YAGsojZj-RQ,0","Nunito Sans":"YAFdtQJYB9w,1","Nunito":"YAFdJoNRMmU,1","Oleo Script":"YACgEQQ14jI,0","Open Sans":"YAFdJt8dAY0,1","Oswald":"YACgEQY10lw,0","Outfit":"YAHO2nVlg14,0","Pacifico":"YADLjORQ1u4,0","Playfair Display":"YAFdJhem5V8,1","Plus Jakarta Sans":"YAHO2gdhi18,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Public Sans":"YAFdJj8NdaU,1","Quicksand":"YAFdJpYtCxE,1","Raleway":"YAFdJhmxbVQ,1","Roboto Slab":"YAFdJswIKAg,0","Rockwell":"YAFcfyVZnN0,0","Rye":"YACgEdQP21k,0","STIX Two Text":"YAHO2joycuk,0","Sarabun":"YAFdJssSnME,0","Schibsted Grotesk":"YAHO2sWydRk,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Space Grotesk":"YAHO2sjPCSM,0","Space Mono":"YADW1-vpsoc,0","Spectral":"YAHO2rVUHIM,0","Times New Roman":"YAGzXW3gftg,0","Trebuchet MS":"YAFcfrglpVA,0","Ubuntu":"YACgERDU--Q,0","Verdana":"YAGzXTctYtQ,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0"}}');</script><script src="/_sdk/05db820ba1544614.telemetry_sdk.js" integrity="sha512-a7JzkQDDcioSXpM61nxTfeRW7PcxWQy5+BrhyeTFmQFsXJ+Gncm0y50u7fTA7qOPegFnRgqCfa0mGUOK1yjDWQ=="></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>明亮碼錶</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172e34;
+      --accent: #087e70;
+      --muted: #526b70;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'DM Sans', sans-serif; }
+    .app-shell {
+      width: 100%;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(20px, 5vw, 64px) 16px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .app-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image: linear-gradient(#087e700b 1px, transparent 1px), linear-gradient(90deg, #087e700b 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 82%);
+    }
+    .stopwatch-card {
+      width: 100%;
+      max-width: 880px;
+      border: 1px solid #d4e4e0;
+      border-radius: 28px;
+      padding: clamp(24px, 5vw, 60px);
+      box-shadow: 0 24px 70px #173c3614, 0 2px 8px #173c3608;
+    }
+    .eyebrow { letter-spacing: .22em; text-transform: uppercase; }
+    .rule { height: 1px; background: linear-gradient(90deg, #087e70, #a8d9cc, transparent); }
+    .display {
+      position: relative;
+      border: 1px solid #cbded8;
+      border-radius: 20px;
+      background: #f2faf7;
+      padding: clamp(24px, 5vw, 44px) clamp(10px, 4vw, 36px);
+      overflow: hidden;
+    }
+    .display::before, .display::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: #087e70;
+      opacity: .65;
+    }
+    .display::before { top: 12px; left: 12px; border-top: 2px solid; border-left: 2px solid; }
+    .display::after { bottom: 12px; right: 12px; border-bottom: 2px solid; border-right: 2px solid; }
+    .digits {
+      color: var(--ink);
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(25px, 7.2vw, 76px);
+      line-height: 1.25;
+      letter-spacing: -.075em;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .milliseconds { color: var(--accent); font-size: .62em; letter-spacing: -.06em; }
+    .separator { color: #789891; }
+    .unit-labels {
+      display: grid;
+      grid-template-columns: 2fr 2fr 2fr 1.8fr;
+      gap: 8px;
+      max-width: 620px;
+      margin: 18px auto 0;
+      text-align: center;
+      letter-spacing: .16em;
+    }
+    .control {
+      min-height: 58px;
+      border: 1px solid #b9d1ca;
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s, filter .18s, opacity .18s;
+    }
+    .control:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 9px 20px #087e7026; filter: brightness(.96); }
+    .control:not(:disabled):active { transform: translateY(0); box-shadow: none; }
+    .control:disabled { opacity: .45; cursor: not-allowed; }
+    .control:focus-visible { outline: 3px solid #087e70; outline-offset: 4px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #087e70; }
+    .running .status-dot { animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .35; } }
+    @media (max-width: 520px) {
+      .stopwatch-card { border-radius: 20px; }
+      .unit-labels { gap: 2px; letter-spacing: .08em; }
+      .control { min-height: 52px; padding: 10px 6px; }
+    }
+    @media (max-width: 360px) {
+      .digits { font-size: 22px; }
+      .stopwatch-card { padding: 20px 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .control, .status-dot { animation: none !important; transition: none !important; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="/_sdk/570d53629f0b998d.data_sdk.js" type="text/javascript" integrity="sha512-JEN39+V+Nvv9ZZOVS8vNk1iA9ErZJHTdgOw9KzPuMiK7m0I+KPEr/wmTnCFIQVsDjCZgJWfGnFi1IQh2Io2qyA=="></script>
+  <script src="/_sdk/7825871aa95c503d.editing_sdk.js" type="text/javascript" integrity="sha512-2lFhP7fVLyI/xh1XVD1wGvcEUDBQxBW40AsWL6PQ5RZg0/hxM41hBHE/wQF1zqhE8vvzASF/osL1pnlucLWnaQ=="></script>
+  <script src="/_sdk/f195026a424c1f85.resizing_sdk.js" type="text/javascript" integrity="sha512-8On4Z+AXh1abEzZJ9Dbn9wOvFg+k1LsAaAzKGQ7LlfgXajZ9xEmZaZ1QVzv0AWhCZtCsEpWSOG9DgLri06TS7A=="></script>
+ </head>
+ <body data-template-id="__page-root" class="app-shell" style="background: rgb(243, 248, 245);">
+  <main data-template-id="stopwatch-panel" class="canva-panel stopwatch-card" style="background: rgb(255, 255, 255);">
+   <header>
+    <p data-template-id="eyebrow" class="canva-text eyebrow mb-4" style="color: rgb(8, 126, 112); font-weight: 700; font-style: normal; font-size: 12px;">PRECISION / 001</p>
+    <h1 data-template-id="page-title" class="canva-text font-bold tracking-tight" style="color: rgb(23, 46, 52); font-weight: 700; font-style: normal; font-size: 32px;">明亮碼錶</h1>
+    <p data-template-id="page-description" class="canva-text mt-3 mb-8" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 16px;">精準掌握每一毫秒。</p>
+    <div class="rule mb-9" aria-hidden="true"></div>
+   </header>
+   <section aria-label="碼錶時間">
+    <div class="display">
+     <div class="text-center">
+      <div id="time-display" class="digits" role="timer" aria-label="經過時間：0小時0分鐘0秒0毫秒"><span id="hours">00</span><span class="separator">:</span><span id="minutes">00</span><span class="separator">:</span><span id="seconds">00</span><span class="separator">.</span><span id="milliseconds" class="milliseconds">000</span>
+      </div>
+      <div class="unit-labels" aria-hidden="true"><span data-template-id="hours-label" class="canva-text" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 12px;">小時</span> <span data-template-id="minutes-label" class="canva-text" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 12px;">分鐘</span> <span data-template-id="seconds-label" class="canva-text" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 12px;">秒</span> <span data-template-id="milliseconds-label" class="canva-text" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 12px;">毫秒</span>
+      </div>
+     </div>
+    </div>
+    <div id="status-area" class="flex items-center justify-center gap-3 mt-7 mb-8" role="status" aria-live="polite"><span class="status-dot" aria-hidden="true"></span> <span data-template-id="status-ready" id="status-ready" class="canva-text" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 14px;">準備就緒</span> <span data-template-id="status-running" id="status-running" class="canva-text hidden" style="color: rgb(8, 126, 112); font-weight: 400; font-style: normal; font-size: 14px;">計時中</span> <span data-template-id="status-paused" id="status-paused" class="canva-text hidden" style="color: rgb(82, 107, 112); font-weight: 400; font-style: normal; font-size: 14px;">已暫停</span>
+    </div>
+   </section>
+   <nav aria-label="碼錶控制" class="grid grid-cols-3 gap-2 sm:gap-4"><button data-template-id="start-button" id="start-button" type="button" class="canva-button control" style="background: rgb(8, 126, 112); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 16px;">開始</button> <button data-template-id="pause-button" id="pause-button" type="button" class="canva-button control" disabled="" style="background: rgb(225, 241, 235); color: rgb(23, 46, 52); font-weight: 700; font-style: normal; font-size: 16px;">暫停</button> <button data-template-id="reset-button" id="reset-button" type="button" class="canva-button control" disabled="" style="background: rgb(237, 242, 240); color: rgb(23, 46, 52); font-weight: 700; font-style: normal; font-size: 16px;">重置</button>
+   </nav>
+   <footer class="mt-8 text-center">
+    <p data-template-id="footer-note" class="canva-text" style="color: rgb(100, 124, 128); font-weight: 400; font-style: normal; font-size: 12px;">開始計時 · 隨時暫停 · 一鍵歸零</p>
+   </footer>
+  </main>
+  <script>
+    const parts = {
+      hours: document.getElementById('hours'),
+      minutes: document.getElementById('minutes'),
+      seconds: document.getElementById('seconds'),
+      milliseconds: document.getElementById('milliseconds')
+    };
+    const display = document.getElementById('time-display');
+    const startButton = document.getElementById('start-button');
+    const pauseButton = document.getElementById('pause-button');
+    const resetButton = document.getElementById('reset-button');
+    const statusArea = document.getElementById('status-area');
+    const statuses = ['ready', 'running', 'paused'];
+    let elapsed = 0;
+    let startedAt = 0;
+    let frameId = null;
+    let state = 'ready';
+
+    function renderTime(ms) {
+      const total = Math.max(0, Math.floor(ms));
+      const hours = Math.floor(total / 3600000);
+      const minutes = Math.floor(total / 60000) % 60;
+      const seconds = Math.floor(total / 1000) % 60;
+      const milliseconds = total % 1000;
+      parts.hours.textContent = String(hours).padStart(2, '0');
+      parts.minutes.textContent = String(minutes).padStart(2, '0');
+      parts.seconds.textContent = String(seconds).padStart(2, '0');
+      parts.milliseconds.textContent = String(milliseconds).padStart(3, '0');
+      display.setAttribute('aria-label', `經過時間：${hours}小時${minutes}分鐘${seconds}秒${milliseconds}毫秒`);
+    }
+
+    function setState(next) {
+      state = next;
+      statuses.forEach(name => {
+        document.getElementById(`status-${name}`).classList.toggle('hidden', name !== next);
+      });
+      statusArea.classList.toggle('running', next === 'running');
+      startButton.disabled = next === 'running';
+      pauseButton.disabled = next !== 'running';
+      resetButton.disabled = next === 'ready';
+    }
+
+    function tick(now) {
+      if (state !== 'running') return;
+      renderTime(elapsed + now - startedAt);
+      frameId = requestAnimationFrame(tick);
+    }
+
+    startButton.addEventListener('click', () => {
+      if (state === 'running') return;
+      startedAt = performance.now();
+      setState('running');
+      frameId = requestAnimationFrame(tick);
+    });
+
+    pauseButton.addEventListener('click', () => {
+      if (state !== 'running') return;
+      elapsed += performance.now() - startedAt;
+      cancelAnimationFrame(frameId);
+      frameId = null;
+      renderTime(elapsed);
+      setState('paused');
+    });
+
+    resetButton.addEventListener('click', () => {
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = null;
+      elapsed = 0;
+      startedAt = 0;
+      renderTime(0);
+      setState('ready');
+    });
+
+    renderTime(0);
+    setState('ready');
+  </script>
+ 
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"480c9d8468c44ad3bed3c74fbcc6d6f3","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body></html>

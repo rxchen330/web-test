@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d19">
+  <title>NEXUS｜科技碼錶</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#eef3f9, #080d19);
+      --panel: light-dark(#ffffff, #0d1525);
+      --panel-soft: light-dark(#f5f8fc, #101c30);
+      --text: light-dark(#17253b, #eaf5ff);
+      --muted: light-dark(#687b94, #7f93b0);
+      --line: light-dark(#d7e1ee, #1e3450);
+      --cyan: #49eaff;
+      --blue: #4388ff;
+      --green: #65f5bc;
+      --red: #ff6b86;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .app {
+      min-height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--bg);
+      background-image: radial-gradient(ellipse at 50% 28%, light-dark(#dceeff, #10264a) 0%, transparent 48%),
+                        linear-gradient(light-dark(#d5e0ed55, #2443662b) 1px, transparent 1px),
+                        linear-gradient(90deg, light-dark(#d5e0ed55, #2443662b) 1px, transparent 1px);
+      background-size: auto, 36px 36px, 36px 36px;
+      padding: 28px 20px 32px;
+    }
+    .shell { max-width: 980px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; letter-spacing: .16em; font-weight: 800; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid #49eaff99; border-radius: 10px; color: var(--cyan); box-shadow: 0 0 22px #49eaff20, inset 0 0 14px #49eaff12; }
+    .brand-name { font-size: 14px; }
+    .brand-sub { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; letter-spacing: .25em; font-weight: 600; }
+    .live { display: flex; align-items: center; gap: 8px; font-size: 10px; letter-spacing: .16em; color: var(--muted); }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px #65f5bc; }
+    main { padding-top: clamp(38px, 8vh, 78px); }
+    .eyebrow { color: var(--cyan); text-align: center; font-size: 10px; letter-spacing: .36em; font-weight: 800; }
+    h1 { text-align: center; font-size: clamp(28px, 5vw, 43px); letter-spacing: .1em; margin: 12px 0 8px; font-weight: 750; }
+    .subtitle { text-align: center; color: var(--muted); font-size: 13px; letter-spacing: .08em; margin: 0; }
+    .timer-card { position: relative; max-width: 760px; margin: 36px auto 0; padding: clamp(24px, 5vw, 48px); border: 1px solid var(--line); border-radius: 24px; background: color-mix(in srgb, var(--panel) 91%, transparent); box-shadow: 0 24px 80px #00000018, inset 0 1px 0 light-dark(#ffffff, #ffffff0a); }
+    .timer-card::before, .timer-card::after { content: ""; position: absolute; width: 42px; height: 42px; pointer-events: none; }
+    .timer-card::before { top: -1px; left: -1px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); border-radius: 24px 0 0 0; }
+    .timer-card::after { right: -1px; bottom: -1px; border-right: 2px solid var(--blue); border-bottom: 2px solid var(--blue); border-radius: 0 0 24px 0; }
+    .timer-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 10px; letter-spacing: .17em; }
+    .status { display: flex; align-items: center; gap: 7px; color: var(--green); }
+    .status.paused { color: #ffca73; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .dial-wrap { display: flex; justify-content: center; margin: 25px auto 28px; }
+    .dial { width: min(70vw, 280px); aspect-ratio: 1; border-radius: 50%; position: relative; display: grid; place-items: center; background: conic-gradient(from -90deg, #49eaff 0deg, #4388ff var(--progress, 0deg), transparent var(--progress, 0deg) 360deg); padding: 2px; box-shadow: 0 0 42px #49eaff13; }
+    .dial-inner { width: 100%; height: 100%; border-radius: inherit; background: var(--panel); display: grid; place-items: center; position: relative; overflow: hidden; }
+    .dial-inner::before { content: ""; position: absolute; inset: 14px; border: 1px dashed var(--line); border-radius: 50%; }
+    .dial-inner::after { content: ""; position: absolute; inset: 26px; border: 1px solid light-dark(#dbe6f2, #1b2c43); border-radius: 50%; }
+    .dial-content { z-index: 1; text-align: center; }
+    .dial-label { font-size: 9px; color: var(--muted); letter-spacing: .32em; margin-bottom: 10px; }
+    .time { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; font-size: clamp(35px, 7vw, 48px); font-weight: 650; letter-spacing: -.045em; white-space: nowrap; text-shadow: 0 0 24px #49eaff22; }
+    .time .ms { color: var(--cyan); font-size: .58em; letter-spacing: -.02em; }
+    .unit-row { display: flex; justify-content: center; gap: 34px; margin-top: 8px; color: var(--muted); font-size: 9px; letter-spacing: .18em; }
+    .readouts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .readout { padding: 15px 12px; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+    .readout-label { color: var(--muted); font-size: 9px; letter-spacing: .16em; margin-bottom: 8px; }
+    .readout-value { font-size: 17px; font-variant-numeric: tabular-nums; font-weight: 700; }
+    .readout-value.cyan { color: var(--cyan); }
+    .controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+    button { font: inherit; cursor: pointer; min-width: 142px; padding: 14px 24px; border-radius: 12px; border: 1px solid var(--line); color: var(--text); background: var(--panel-soft); font-size: 12px; letter-spacing: .12em; font-weight: 750; transition: transform .18s, box-shadow .18s, border-color .18s; }
+    button:hover { transform: translateY(-2px); }
+    button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+    .primary { background: linear-gradient(115deg, #37d9f4, #4388ff); color: #071324; border-color: transparent; box-shadow: 0 8px 26px #4388ff2b; }
+    .primary:hover { box-shadow: 0 10px 32px #4388ff55; }
+    .reset:hover { border-color: var(--red); }
+    .button-icon { margin-right: 8px; }
+    .hint { margin-top: 18px; color: var(--muted); font-size: 10px; text-align: center; letter-spacing: .06em; }
+    footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; color: var(--muted); font-size: 9px; letter-spacing: .12em; }
+    .footer-right { color: var(--cyan); }
+    @media (max-width: 520px) {
+      .app { padding: 20px 14px 24px; }
+      .live { font-size: 8px; }
+      .timer-card { margin-top: 26px; padding: 22px 16px; border-radius: 18px; }
+      .timer-top { font-size: 8px; }
+      .readouts { gap: 7px; }
+      .readout { padding: 12px 5px; }
+      .readout-label { font-size: 8px; letter-spacing: .08em; }
+      .readout-value { font-size: 15px; }
+      button { min-width: 0; flex: 1; padding: 14px 12px; }
+      footer { font-size: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">✳</div>
+          <div><span class="brand-name">NEXUS</span><span class="brand-sub">PRECISION TIME SYSTEM</span></div>
+        </div>
+        <div class="live"><span class="live-dot"></span>SYSTEM ONLINE</div>
+      </header>
+      <main>
+        <div class="eyebrow">HIGH PRECISION · 01</div>
+        <h1>數位科技碼錶</h1>
+        <p class="subtitle">精準掌握每一毫秒</p>
+        <section class="timer-card" aria-label="碼錶控制面板">
+          <div class="timer-top">
+            <span>CHRONOGRAPH / DIGITAL</span>
+            <span class="status" id="status"><span class="status-dot"></span><span id="statusText">READY</span></span>
+          </div>
+          <div class="dial-wrap">
+            <div class="dial" id="dial" style="--progress: 0deg">
+              <div class="dial-inner">
+                <div class="dial-content">
+                  <div class="dial-label">ELAPSED TIME</div>
+                  <div class="time" aria-live="off"><span id="mainTime">00:00:00</span><span class="ms">.<span id="mainMs">000</span></span></div>
+                  <div class="unit-row"><span>MIN</span><span>SEC</span><span>MSEC</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="readouts">
+            <div class="readout"><div class="readout-label">TOTAL MINUTES</div><div class="readout-value" id="minutes">00</div></div>
+            <div class="readout"><div class="readout-label">TOTAL SECONDS</div><div class="readout-value cyan" id="seconds">00</div></div>
+            <div class="readout"><div class="readout-label">MILLISECONDS</div><div class="readout-value" id="millis">000</div></div>
+          </div>
+          <div class="controls">
+            <button class="primary" id="startBtn" type="button"><span class="button-icon">▶</span>開始計時</button>
+            <button id="pauseBtn" type="button"><span class="button-icon">Ⅱ</span>暫停</button>
+            <button class="reset" id="resetBtn" type="button"><span class="button-icon">↺</span>重置</button>
+          </div>
+          <div class="hint" id="hint">按下「開始計時」啟動高精度計時器</div>
+        </section>
+      </main>
+      <footer><span> NEXUS TIMEKEEPER · V1.0</span><span class="footer-right">PRECISION TO 1/1000 SEC</span></footer>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const mainTime = $('mainTime');
+      const mainMs = $('mainMs');
+      const status = $('status');
+      const statusText = $('statusText');
+      const hint = $('hint');
+      const dial = $('dial');
+      let running = false;
+      let startedAt = 0;
+      let elapsedBeforeStart = 0;
+      let frame = 0;
+      let lastPaint = -1;
+
+      function elapsed() {
+        return elapsedBeforeStart + (running ? performance.now() - startedAt : 0);
+      }
+      function pad(value, width = 2) { return String(value).padStart(width, '0'); }
+      function render(force = false) {
+        const ms = Math.max(0, Math.floor(elapsed()));
+        if (!force && ms === lastPaint) return;
+        lastPaint = ms;
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const millis = ms % 1000;
+        mainTime.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        mainMs.textContent = pad(millis, 3);
+        $('minutes').textContent = pad(Math.floor(totalSeconds / 60));
+        $('seconds').textContent = pad(totalSeconds % 60);
+        $('millis').textContent = pad(millis, 3);
+        dial.style.setProperty('--progress', `${(ms % 60000) / 60000 * 360}deg`);
+      }
+      function tick() {
+        render();
+        if (running) frame = requestAnimationFrame(tick);
+      }
+      $('startBtn').addEventListener('click', () => {
+        if (running) return;
+        running = true;
+        startedAt = performance.now();
+        status.classList.remove('paused');
+        statusText.textContent = 'RUNNING';
+        hint.textContent = '計時進行中 · 即時更新至毫秒';
+        tick();
+      });
+      $('pauseBtn').addEventListener('click', () => {
+        if (!running) {
+          hint.textContent = elapsedBeforeStart > 0 ? '目前已暫停，按「開始計時」可繼續' : '碼錶尚未啟動';
+          return;
+        }
+        elapsedBeforeStart += performance.now() - startedAt;
+        running = false;
+        cancelAnimationFrame(frame);
+        status.classList.add('paused');
+        statusText.textContent = 'PAUSED';
+        hint.textContent = '計時已暫停 · 可隨時繼續';
+        render(true);
+      });
+      $('resetBtn').addEventListener('click', () => {
+        running = false;
+        cancelAnimationFrame(frame);
+        startedAt = 0;
+        elapsedBeforeStart = 0;
+        lastPaint = -1;
+        status.classList.remove('paused');
+        statusText.textContent = 'READY';
+        hint.textContent = '按下「開始計時」啟動高精度計時器';
+        render(true);
+      });
+      render(true);
+    })();
+  </script>
+</body>
+</html>
